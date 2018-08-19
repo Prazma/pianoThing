@@ -9,12 +9,135 @@
             }
             canvas {
                 background: #000;
-                width: 100%;
-                height: 100vh;
+            }
+            #datamanager {
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                width: 300px;
+                border: 1px solid #000;
+                border-radius: 6px;
             }
         </style>
     </head>
-    <body>
-        <canvas id="graphing"></canvas>
+    <body onload="loadAxis()">
+        <canvas id="graphing" width="870" height="870"></canvas>
+        <div id="datamanager">
+            <div id="datainput">
+                <div id="plotManager">
+                    <div>
+                        <span>Plot 1</span><br>
+                        <input placeholder="color" type="number" id="1color">
+                        <input placeholder="x" type="number" id="1x">
+                        <input placeholder="y" type="number" id="1y">
+                    </div>
+                </div>
+                <button onclick="newPlotCell()">New plot</button>
+                <button onclick="saveProgress()">Save</button>
+            </div>
+            <form action="javascript:drawGraph()">
+                <input type="submit" value="Draw Graph">
+            </form>
+        </div>
+        <script>
+            var canvas = document.getElementById('graphing');
+            var context = canvas.getContext('2d');
+
+            var howmanyplots = 1;
+
+            function loadAxis() {
+                context.beginPath();
+                context.moveTo(0, 435);
+                context.lineTo(870, 435);
+                context.lineWidth = 2;
+
+                // set line color
+                context.strokeStyle = '#ffffff';
+                context.stroke();
+
+
+                context.beginPath();
+                context.moveTo(435, 0);
+                context.lineTo(435, 870);
+                context.lineWidth = 2;
+
+                // set line color
+                context.strokeStyle = '#ffffff';
+                context.stroke();
+            }
+            function newPlotCell() {
+                for(i=0;i<10;i++) {
+                    howmanyplots += 1;
+                    document.getElementById("plotManager").innerHTML += '<div><span>Plot '+howmanyplots+'</span><br><input placeholder="color" type="number" id="'+howmanyplots+'color"><input placeholder="x" type="number" id="'+howmanyplots+'x"><input placeholder="y" type="number" id="'+howmanyplots+'y"></div>';
+                }
+            }
+            function drawGraph() {
+                var startPointX = document.getElementById("1x").value * 10;
+                var startPointY = 870 - document.getElementById("1y").value * 10;
+
+                var varGet;
+                var idCode;
+
+                var colorNow;
+                var xNow;
+                var yNow;
+
+                for(i=0;i<howmanyplots;i++) {
+                    varGet = i+1;
+                    idCode = varGet + "color";
+                    colorNow = document.getElementById(idCode).value * 5;
+                    console.log(colorNow);
+
+                    idCode = varGet + "x";
+                    xNow = document.getElementById(idCode).value * 10;
+                    idCode = varGet + "y";
+                    yNow = 870 - document.getElementById(idCode).value * 10;
+
+                    context.beginPath();
+                    context.moveTo(startPointX, startPointY);
+                    context.lineTo(xNow, yNow);
+                    context.lineWidth = 2;
+
+                    // set line color
+                    context.strokeStyle = '#ffffff';
+                    context.stroke();
+
+                    context.beginPath();
+                    context.arc(xNow,yNow,2,0,2*Math.PI);
+                    context.strokeStyle = 'rgb(255,'+colorNow+',100)';
+                    context.stroke();
+
+                    startPointX = xNow;
+                    startPointY = yNow;
+                }
+            }
+            function saveProgress() {
+                var saveLine = [];
+                var numberOA;
+
+                var getID;
+
+                var xVal;
+                var yVal;
+                var cVal;
+
+                var finale;
+
+                var finaleP;
+                for(i=0;i<howmanyplots;i++) {
+                    numberOA = i+1;
+                    getID = numberOA + "x";
+                    xVal = document.getElementById(getID);
+                    getID = numberOA + "y";
+                    yVal = document.getElementById(getID);
+                    getID = numberOA + "color";
+                    cVal = document.getElementById(getID);
+
+                    finale = xVal + "_" + yVal + "_" + cVal;
+                }
+                finaleP = saveLine.join("-");
+                localStorage.saveP = finaleP;
+            }
+        </script>
     </body>
 </html>
